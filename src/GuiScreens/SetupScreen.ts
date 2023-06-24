@@ -26,7 +26,6 @@ export class SetupScreen {
     }
     private SetupWindow() {
         const SetupWindow: Element = document.createElement("div");
-        //SetupWindow.
     }
     /*
     private SetupWindow(){
