@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import * as PIXI from "pixi.js";
 import { Color } from "../Color";
+import { Welcome } from "./SetupWindowScreens/Welcome";
 
 export class SetupScreen {
     private app: PIXI.Application;
@@ -12,7 +13,7 @@ export class SetupScreen {
         app.renderer.backgroundColor = backgroundColor.getRGB();
         let backgroundWhiteAlpha = 0;
         const backgroundColorAnim = setInterval(() => {
-            if (backgroundWhiteAlpha > 235) {
+            if (backgroundWhiteAlpha > 220) {
                 clearInterval(backgroundColorAnim);
                 setTimeout(() => {
                     this.SetupWindow();
@@ -25,7 +26,22 @@ export class SetupScreen {
         }, 1);
     }
     private SetupWindow() {
-        const SetupWindow: Element = document.createElement("div");
+        const SetupWindow: HTMLElement = document.createElement("div");
+        SetupWindow.style.backgroundColor = "white";
+        SetupWindow.style.transition = "0.8s top, left, bottom, right, width, height, background-color ease-in-out";
+        SetupWindow.style.width = "75vw";
+        SetupWindow.style.height = "85vh";
+        SetupWindow.style.position = "absolute";
+        SetupWindow.style.top = "150vh";
+        SetupWindow.style.left = "50vw";
+        SetupWindow.style.transform = "translate(-50%, -50%)";
+        SetupWindow.style.borderRadius = "0.5rem";
+        document.body.appendChild(SetupWindow);
+        const welcomeScreen = new Welcome(SetupWindow);
+
+        setTimeout(() => {
+            SetupWindow.style.top = "50vh";
+        }, 200);
     }
     /*
     private SetupWindow(){
