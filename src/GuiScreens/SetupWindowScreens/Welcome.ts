@@ -32,29 +32,32 @@ export class Welcome {
             continueButton.style.backgroundColor = "rgb(124,191,255)";
         });
         // ----------------------------------------------------------------------------------
-        const screenContainer:HTMLElement = document.createElement("div");
+        const screenContainer: HTMLElement = document.createElement("div");
         screenContainer.style.width = "100%";
         screenContainer.style.height = "100%";
         screenContainer.style.position = "absolute";
         screenContainer.style.left = "100%";
         screenContainer.style.top = "0px";
-        screenContainer.style.transition = "left 0.8s"
+        screenContainer.style.transition = "left 0.8s";
 
         SetupWindow.appendChild(screenContainer);
         screenContainer.appendChild(continueButton);
 
-        const title:HTMLElement = document.createElement("h1");
+        const title: HTMLElement = document.createElement("h1");
         title.style.position = "relative";
         title.style.top = "10px";
         title.style.left = "40px";
         title.innerText = "Welcome to koneOS!";
-        title.style.fontFamily = "Arial"
+        title.style.fontFamily = "Arial";
         screenContainer.appendChild(title);
         setTimeout(() => {
             screenContainer.style.left = "0px";
-        },1000);
+        }, 1000);
 
-        continueButton.addEventListener("click", () => {
+        continueButton.addEventListener("click", handleButtonEvent);
+
+        function handleButtonEvent() {
+            continueButton.removeEventListener("click", handleButtonEvent);
             screenContainer.style.left = "-100%";
             setTimeout(() => {
                 // cleanup
@@ -62,7 +65,6 @@ export class Welcome {
                 // next screen
                 new InstallFileSystem(SetupWindow, continueButton);
             }, 800);
-        });
-
+        }
     }
 }

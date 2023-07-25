@@ -13,6 +13,8 @@ const app = new Application({
 });
 
 window.onload = async (): Promise<void> => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     document.body.appendChild(app.view);
 
     resizeCanvas();

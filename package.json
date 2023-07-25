@@ -26,8 +26,8 @@
     "license": "MIT",
     "dependencies": {
         "core-js": "^3.26.0",
-        "pixi-spine": "^3.0.16",
-        "pixi.js": "^6.5.8",
+        "pixi-ease": "^3.0.7",
+        "pixi.js": "^7.2.4",
         "regenerator-runtime": "^0.13.10"
     },
     "devDependencies": {

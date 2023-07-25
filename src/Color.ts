@@ -2,9 +2,13 @@
 export class Color {
     private value: number;
 
+    /**
+     * @deprecated koneOS Color class is deprecated, use PIXI.Color instead.
+     */
     public constructor(r: number, g: number, b: number, a: number) {
         this.value = ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | ((b & 0xff) << 0);
         Color.testColorValueRange(r, g, b, a);
+        console.warn("koneOS Color class is deprecated, use PIXI.Color instead.");
     }
 
     private static testColorValueRange(r: number, g: number, b: number, a: number) {

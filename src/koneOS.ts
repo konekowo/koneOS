@@ -3,6 +3,9 @@
 import * as PIXI from "pixi.js";
 import { LoadScreen } from "./loadScreen";
 import { SetupScreen } from "./GuiScreens/SetupScreen";
+import { FileSystem } from "./FileSystem";
+import { LockScreen } from "./GuiScreens/LockScreen";
+
 export class koneOS {
     public devMode = false;
     constructor(app: PIXI.Application) {
@@ -10,10 +13,14 @@ export class koneOS {
         const loadScreen = new LoadScreen(app);
         // load stuff
 
-        setTimeout(() => {
+        setTimeout(async () => {
             loadScreen.loadDone();
-
-            new SetupScreen(app);
-        }, 1);
+            const isSetupDone = window.localStorage.getItem("isSetupDone");
+            if (isSetupDone == "true") {
+                new LockScreen(app);
+            } else {
+                new SetupScreen(app);
+            }
+        }, 5000);
     }
 }

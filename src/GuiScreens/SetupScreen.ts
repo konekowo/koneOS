@@ -2,28 +2,25 @@
 import * as PIXI from "pixi.js";
 import { Color } from "../Color";
 import { Welcome } from "./SetupWindowScreens/Welcome";
-
+import { Ease, ease } from "pixi-ease";
 export class SetupScreen {
     private app: PIXI.Application;
 
     public constructor(app: PIXI.Application) {
         console.log("Starting Setup");
         this.app = app;
-        let backgroundColor: Color = new Color(0, 0, 0, 255);
-        app.renderer.backgroundColor = backgroundColor.getRGB();
-        let backgroundWhiteAlpha = 0;
-        const backgroundColorAnim = setInterval(() => {
-            if (backgroundWhiteAlpha > 220) {
-                clearInterval(backgroundColorAnim);
-                setTimeout(() => {
-                    this.SetupWindow();
-                }, 500);
-            } else {
-                backgroundWhiteAlpha += 2;
-                backgroundColor = new Color(backgroundWhiteAlpha, backgroundWhiteAlpha, backgroundWhiteAlpha, 255);
-                app.renderer.backgroundColor = backgroundColor.getRGB();
-            }
-        }, 1);
+        const bgSprite = new PIXI.Graphics();
+        bgSprite.beginFill(new PIXI.Color("rgba(220,220,220,1)"));
+        bgSprite.drawRect(0, 0, window.innerWidth, window.innerHeight);
+        window.addEventListener("resize", () => {
+            bgSprite.drawRect(0, 0, window.innerWidth, window.innerHeight);
+        });
+        bgSprite.alpha = 0;
+        app.stage.addChild(bgSprite);
+        ease.add(bgSprite, { alpha: 1 }, { reverse: false, duration: 800, ease: "easeInOutQuad" });
+        setTimeout(() => {
+            this.SetupWindow();
+        }, 1000);
     }
     private SetupWindow() {
         const SetupWindow: HTMLElement = document.createElement("div");
