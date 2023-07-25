@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
+import { InstallFileSystem } from "./InstalFileSystem";
+
 export class Welcome {
     public constructor(SetupWindow: HTMLElement) {
+        //Continue Button ----------------------------------------------------------------
         const continueButton: HTMLElement = document.createElement("button");
         continueButton.innerText = "Continue";
         continueButton.style.fontSize = "1.2rem";
@@ -15,6 +18,7 @@ export class Welcome {
         continueButton.style.top = "100%";
         continueButton.style.transform = "translate(-120%, -140%)";
         continueButton.style.transition = "all 0.2s";
+        // hover and click animations
         continueButton.addEventListener("mouseenter", () => {
             continueButton.style.backgroundColor = "rgb(124,191,255)";
         });
@@ -27,6 +31,38 @@ export class Welcome {
         continueButton.addEventListener("mouseup", () => {
             continueButton.style.backgroundColor = "rgb(124,191,255)";
         });
-        SetupWindow.appendChild(continueButton);
+        // ----------------------------------------------------------------------------------
+        const screenContainer:HTMLElement = document.createElement("div");
+        screenContainer.style.width = "100%";
+        screenContainer.style.height = "100%";
+        screenContainer.style.position = "absolute";
+        screenContainer.style.left = "100%";
+        screenContainer.style.top = "0px";
+        screenContainer.style.transition = "left 0.8s"
+
+        SetupWindow.appendChild(screenContainer);
+        screenContainer.appendChild(continueButton);
+
+        const title:HTMLElement = document.createElement("h1");
+        title.style.position = "relative";
+        title.style.top = "10px";
+        title.style.left = "40px";
+        title.innerText = "Welcome to koneOS!";
+        title.style.fontFamily = "Arial"
+        screenContainer.appendChild(title);
+        setTimeout(() => {
+            screenContainer.style.left = "0px";
+        },1000);
+
+        continueButton.addEventListener("click", () => {
+            screenContainer.style.left = "-100%";
+            setTimeout(() => {
+                // cleanup
+                SetupWindow.removeChild(screenContainer);
+                // next screen
+                new InstallFileSystem(SetupWindow, continueButton);
+            }, 800);
+        });
+
     }
 }

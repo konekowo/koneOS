@@ -36,6 +36,7 @@ export class SetupScreen {
         SetupWindow.style.left = "50vw";
         SetupWindow.style.transform = "translate(-50%, -50%)";
         SetupWindow.style.borderRadius = "0.5rem";
+        SetupWindow.style.overflow = "hidden";
         document.body.appendChild(SetupWindow);
         const welcomeScreen = new Welcome(SetupWindow);
 
