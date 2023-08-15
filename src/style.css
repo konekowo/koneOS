@@ -3,3 +3,12 @@ body {
     margin: 0 auto;
     background-color: black;
 }
+@font-face {
+    font-family: "JetBrains Mono Medium";
+    src: url("../assets/fonts/JetBrainsMono/JetBrainsMono-Medium.woff2") format("woff2");
+}
+.fakeConsole.Text {
+    font-size: small;
+    margin-bottom: 0px;
+    margin-top: 8px;
+}

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Application } from "pixi.js";
 import "./style.css";
 import { koneOS } from "./koneOS";
@@ -10,6 +9,8 @@ const app = new Application({
     backgroundColor: 0x00000,
     width: appWidth,
     height: appHeight,
+    //resolution: window.devicePixelRatio,
+    antialias: true,
 });
 
 window.onload = async (): Promise<void> => {
@@ -18,10 +19,10 @@ window.onload = async (): Promise<void> => {
     document.body.appendChild(app.view);
 
     resizeCanvas();
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     new koneOS(app);
 
-    app.stage.interactive = true;
+    //app.stage.eventMode = 'static';
 };
 
 function resizeCanvas(): void {

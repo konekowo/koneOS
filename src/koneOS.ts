@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-
 import * as PIXI from "pixi.js";
 import { LoadScreen } from "./loadScreen";
 import { SetupScreen } from "./GuiScreens/SetupScreen";
@@ -21,6 +19,6 @@ export class koneOS {
             } else {
                 new SetupScreen(app);
             }
-        }, 5000);
+        }, 0);
     }
 }

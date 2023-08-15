@@ -1,6 +1,7 @@
-/* eslint-disable prettier/prettier */
 import * as PIXI from "pixi.js";
 import { Ease, ease } from "pixi-ease";
+import * as TWEEN from "@tweenjs/tween.js";
+import { LoginScreen } from "./LoginScreen";
 
 export class LockScreen {
     public constructor(app: PIXI.Application) {
@@ -26,7 +27,7 @@ export class LockScreen {
             } else {
                 scaleFactor0 = window.innerHeight / ogHeight - 0.5;
             }
-            console.log(scaleFactor0);
+            //console.log(scaleFactor0);
             bgSprite.scale = new PIXI.ObservablePoint(null, null, scaleFactor0, scaleFactor0);
             bgSprite.anchor = new PIXI.ObservablePoint(null, null, 0.5, 0.5);
             bgSprite.x = window.innerWidth / 2;
@@ -66,6 +67,9 @@ export class LockScreen {
                 fontSize: 50,
                 fontWeight: "bold",
                 fill: "#ffffff",
+                dropShadow: true,
+                dropShadowBlur: 10,
+                padding: 15,
             });
 
             const style2 = new PIXI.TextStyle({
@@ -73,6 +77,9 @@ export class LockScreen {
                 fontSize: 25,
                 fontWeight: "bold",
                 fill: "#ffffff",
+                dropShadow: true,
+                dropShadowBlur: 15,
+                padding: 15,
             });
             let calendar = new Date();
             let hours = calendar.getHours();
@@ -153,6 +160,7 @@ export class LockScreen {
             date.y = 150 + date.height + 30;
             date.alpha = 0;
             app.stage.addChild(time, date);
+
             window.addEventListener("resize", () => {
                 ease.add(
                     time,
@@ -165,13 +173,41 @@ export class LockScreen {
                     { reverse: false, duration: 400, ease: "easeInOutQuad" },
                 );
             });
-            window.addEventListener("click", () => {
-                ease.add([time, date], { alpha: 0 }, { reverse: false, duration: 200, ease: "easeInOutQuad" });
-                ease.add(bgSprite, { alpha: 0.3 }, { reverse: false, duration: 400, ease: "easeInOutQuad" });
-            });
-            setTimeout(() => {
+            const bgBlur = new PIXI.BlurFilter(0, 8);
+            bgSprite.filters = [bgBlur];
+            const blur = { blurAmmount: 0 };
+            const dateTimeFadeIn = setTimeout(() => {
                 ease.add([time, date], { alpha: 1 }, { reverse: false, duration: 400, ease: "easeInOutQuad" });
             }, 1000);
+            function handleClickBlur() {
+                clearTimeout(dateTimeFadeIn);
+                const blurAnim = new TWEEN.Tween(blur)
+                    .to({ blurAmmount: 50 }, 800)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(() => {
+                        bgBlur.blur = blur.blurAmmount;
+                    })
+                    .start();
+                let animReq: number;
+                function animate(time: number | undefined) {
+                    blurAnim.update(time);
+                    animReq = requestAnimationFrame(animate);
+                }
+                animReq = requestAnimationFrame(animate);
+
+                ease.add([time, date], { alpha: 0 }, { reverse: false, duration: 200, ease: "easeInOutQuad" });
+                ease.add(bgSprite, { alpha: 0.4 }, { reverse: false, duration: 400, ease: "easeInOutQuad" });
+
+                window.removeEventListener("click", handleClickBlur);
+                setTimeout(() => {
+                    cancelAnimationFrame(animReq);
+                }, 1000);
+
+                setTimeout(() => {
+                    new LoginScreen(app, bgSprite);
+                }, 400);
+            }
+            window.addEventListener("click", handleClickBlur);
         };
     }
 }

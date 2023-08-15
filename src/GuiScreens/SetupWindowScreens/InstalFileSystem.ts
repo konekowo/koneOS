@@ -1,6 +1,5 @@
-/* eslint-disable prettier/prettier */
-
 import { FileSystem } from "../../FileSystem";
+import { SetupUsers } from "./SetupUsers";
 
 export class InstallFileSystem {
     public constructor(SetupWindow: HTMLElement, continueButton: HTMLElement) {
@@ -40,18 +39,85 @@ export class InstallFileSystem {
 
         async function handleButtonEvent() {
             continueButton.removeEventListener("click", handleButtonEvent);
-            continueButton.style.display = "none";
+            screenContainer.removeChild(continueButton);
+            screenContainer.innerHTML +=
+                "" +
+                "<div id='fakeConsole' " +
+                'style=\'font-family: "JetBrains Mono Medium";' +
+                "color: rgb(200, 200, 200);" +
+                "background-color: rgb(41,38,49);" +
+                "border-radius: 5px;" +
+                "width: 75%;" +
+                "height: 60%;" +
+                "position: relative;" +
+                "padding: 5px;" +
+                "padding-left: 25px;" +
+                "overflow-wrap: normal;" +
+                "overflow-y: scroll;'></div>";
+            const fakeConsole = await document.getElementById("fakeConsole");
             await FileSystem.createFS();
-
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML +=
+                "<p class='fakeConsole Text'>Created koneOS File System! (And deleted the previous File System if there was one)</p>";
             await FileSystem.createDir("/", "koneOS");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/ directory</p>";
             await FileSystem.createDir("/koneOS/", "user");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/user/ directory</p>";
             await FileSystem.createDir("/koneOS/", "system");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/system/ directory</p>";
             await FileSystem.createDir("/koneOS/system/", "assets");
+            await FileSystem.createDir("/koneOS/system/assets/", "fonts");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/system/assets directory</p>";
             await FileSystem.createDir("/koneOS/user/", "home");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/user/home/ directory</p>";
             await FileSystem.createDir("/koneOS/user/home/", "Desktop");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/user/home/Desktop/ directory</p>";
             await FileSystem.createDir("/koneOS/user/home/", "Documents");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/user/home/Documents/ directory</p>";
             await FileSystem.createDir("/koneOS/user/home/", "Downloads");
-            await window.localStorage.setItem("isSetupDone", "true");
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Created /koneOS/user/home/Downloads/ directory</p>";
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            fakeConsole.innerHTML += "<p class='fakeConsole Text'>Done!</p>";
+
+            //await window.localStorage.setItem("isSetupDone", "true");
+            screenContainer.appendChild(continueButton);
+            continueButton.innerText = "Continue";
+            continueButton.addEventListener("click", handleButtonEvent2);
+            function handleButtonEvent2() {
+                continueButton.removeEventListener("click", handleButtonEvent2);
+                screenContainer.style.left = "-100%";
+                setTimeout(() => {
+                    // cleanup
+                    SetupWindow.removeChild(screenContainer);
+                    // next screen
+                    new SetupUsers(SetupWindow, continueButton);
+                }, 800);
+            }
+            /*
+            // test
+            await FileSystem.listDir("/koneOS/").then((results)=>{
+                console.log(results);
+            });
+
+ */
         }
     }
 }

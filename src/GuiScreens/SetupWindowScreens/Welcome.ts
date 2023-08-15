@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { InstallFileSystem } from "./InstalFileSystem";
+import { EULA } from "./EULA";
 
 export class Welcome {
     public constructor(SetupWindow: HTMLElement) {
@@ -63,7 +62,7 @@ export class Welcome {
                 // cleanup
                 SetupWindow.removeChild(screenContainer);
                 // next screen
-                new InstallFileSystem(SetupWindow, continueButton);
+                new EULA(SetupWindow, continueButton);
             }, 800);
         }
     }
