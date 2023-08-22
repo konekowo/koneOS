@@ -1,11 +1,24 @@
 export enum ERROR {
-    NOT_A_DIRECTORY,
-    DIRECTORY_DOES_NOT_EXIST,
-    INDEXEDDB_ERROR,
-    UNKNOWN_ERROR,
-    FILE_DOES_NOT_EXIST,
-    FILE_REQUESTED_IS_A_DIRECTORY,
-    DIRECTORY_REQUESTED_IS_A_FILE,
+    NOT_A_DIRECTORY= 1,
+    DIRECTORY_DOES_NOT_EXIST = 2,
+    INDEXEDDB_ERROR = 3,
+    UNKNOWN_ERROR = 4,
+    FILE_DOES_NOT_EXIST = 5,
+    FILE_REQUESTED_IS_A_DIRECTORY = 6,
+    DIRECTORY_REQUESTED_IS_A_FILE = 7,
+}
+
+export enum SUCCESS {
+    CREATED_FS = 0,
+    CREATED_FILE = -1,
+    CREATED_FOLDER = -2,
+    EDITED_FILE = -3,
+    DELETED_FILE = -4,
+    DELETED_FOLDER_RECURSIVELY = -5,
+    RENAMED_FILE = -6,
+    RENAMED_FOLDER = -7,
+    MOVED_FILE = -8,
+    MOVED_FOLDER = -9,
 }
 export class FileSystem {
     public static async createFS() {
@@ -45,12 +58,15 @@ export class FileSystem {
                 console.error("Database is still there?!?");
                 db.close();
             };
-            resolve(true);
+            resolve(SUCCESS.CREATED_FS);
         });
         return promise;
     }
 
-    public static async createFile(parentDirectory: string, fileName: string, content: any) {
+    public static async createFile(parentDirectory: string, fileName: string, content?: any) {
+        if (content === null || content === undefined){
+            content = "";
+        }
         const promise = new Promise((resolve, reject) => {
             this.createRootDirIfThereIsNoRootDir();
             if (parentDirectory.endsWith("/")) {
@@ -82,9 +98,8 @@ export class FileSystem {
                                 parentDirectory + shouldItUseSlash + fileName,
                             );
                             request.onsuccess = function () {
-                                // (4)
                                 console.log("File created!");
-                                resolve(true);
+                                resolve(SUCCESS.CREATED_FILE);
                             };
 
                             request.onerror = function () {
@@ -142,9 +157,8 @@ export class FileSystem {
                                 parentDirectory + shouldItUseSlash + dirName + "/",
                             );
                             request.onsuccess = function () {
-                                // (4)
                                 console.log("Directory created!");
-                                resolve(true);
+                                resolve(SUCCESS.CREATED_FOLDER);
                             };
 
                             request.onerror = function () {
@@ -179,7 +193,6 @@ export class FileSystem {
                 if (!isDirectory.result) {
                     const request = store.add({ Directory: true }, "/");
                     request.onsuccess = function () {
-                        // (4)
                         console.log("Directory created!");
                     };
 
@@ -217,9 +230,8 @@ export class FileSystem {
                             const request = store.put({ Directory: false, content: content }, pathToFile);
 
                             request.onsuccess = function () {
-                                // (4)
                                 console.log("File edited!");
-                                resolve(true);
+                                resolve(SUCCESS.EDITED_FILE);
                             };
 
                             request.onerror = function () {
@@ -243,7 +255,7 @@ export class FileSystem {
         return promise;
     }
 
-    public static async listDir(directory: string): Promise<any> {
+    public static async listDir(directory: string, dontCloseDB = false): Promise<any> {
         const promise = new Promise((resolve, reject) => {
             this.createRootDirIfThereIsNoRootDir();
             if (directory != "/") {
@@ -270,10 +282,9 @@ export class FileSystem {
                         } else {
                             const request = store.getAllKeys();
                             request.onsuccess = function () {
-                                // (4)
                                 const result = [];
                                 for (let i = 0; i < request.result.length; i++) {
-                                    console.log(request.result[i]);
+                                    //console.log(request.result[i]);
                                     if (request.result[i] !== null || request.result[i] !== undefined) {
                                         if (request.result[i].toString().startsWith(directory)) {
                                             result.push(request.result[i]);
@@ -293,8 +304,10 @@ export class FileSystem {
                         reject(ERROR.DIRECTORY_DOES_NOT_EXIST);
                     }
                 };
+                if (!dontCloseDB){
+                    db.close();
+                }
 
-                db.close();
             };
             openRequest.onerror = function () {
                 console.error("Error when opening indexedDB database:", openRequest.error);
@@ -329,7 +342,6 @@ export class FileSystem {
                             const request = store.get(pathToFile);
 
                             request.onsuccess = function () {
-                                // (4)
                                 console.log("File read!");
 
                                 resolve(request.result.content);
@@ -352,6 +364,63 @@ export class FileSystem {
                 console.error("Error when opening indexedDB database:", openRequest.error);
                 reject(ERROR.INDEXEDDB_ERROR);
             };
+        });
+        return promise;
+    }
+
+    public static async deleteFile(pathToFile: string){
+        const promise = new Promise((resolve, reject) => {
+            this.createRootDirIfThereIsNoRootDir();
+            if (pathToFile != "/") {
+                if (pathToFile.endsWith("/")) {
+                    pathToFile = pathToFile.substring(0, pathToFile.length - 1);
+                }
+            }
+
+            const openRequest = indexedDB.open("koneOS_FileSystem", 1);
+            openRequest.onsuccess = function () {
+                const db = openRequest.result;
+                const transaction = db.transaction("koneOS_MainDrive", "readwrite");
+                const store = transaction.objectStore("koneOS_MainDrive");
+                console.log("Checking", pathToFile);
+                const isFile = store.get(pathToFile);
+                isFile.onsuccess = () => {
+                    if (isFile.result) {
+                        if (isFile.result.Directory != false) {
+                            console.error(pathToFile, "is not a file!");
+                            reject(ERROR.FILE_REQUESTED_IS_A_DIRECTORY);
+                        } else {
+                            const request = store.delete(pathToFile);
+
+                            request.onsuccess = function () {
+                                resolve(SUCCESS.DELETED_FILE);
+                            };
+
+                            request.onerror = function () {
+                                console.log("Error when reading file:", request.error);
+                                reject(ERROR.UNKNOWN_ERROR);
+                            };
+                        }
+                    } else {
+                        console.error(pathToFile, "does not exist!");
+                        reject(ERROR.FILE_DOES_NOT_EXIST);
+                    }
+                };
+
+                db.close();
+            };
+            openRequest.onerror = function () {
+                console.error("Error when opening indexedDB database:", openRequest.error);
+                reject(ERROR.INDEXEDDB_ERROR);
+            };
+        });
+        return promise;
+    }
+
+    public static async deleteDirRecursive(pathToFile: string){
+        const promise = new Promise((resolve, reject) => {
+            //TODO: delete directory recursively
+
         });
         return promise;
     }

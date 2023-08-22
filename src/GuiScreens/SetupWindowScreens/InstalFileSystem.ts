@@ -97,6 +97,8 @@ export class InstallFileSystem {
             // @ts-ignore
             fakeConsole.innerHTML += "<p class='fakeConsole Text'>Done!</p>";
 
+
+
             //await window.localStorage.setItem("isSetupDone", "true");
             screenContainer.appendChild(continueButton);
             continueButton.innerText = "Continue";
