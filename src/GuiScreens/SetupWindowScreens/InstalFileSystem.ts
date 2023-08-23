@@ -96,9 +96,7 @@ export class InstallFileSystem {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             fakeConsole.innerHTML += "<p class='fakeConsole Text'>Done!</p>";
-
-
-
+            
             //await window.localStorage.setItem("isSetupDone", "true");
             screenContainer.appendChild(continueButton);
             continueButton.innerText = "Continue";

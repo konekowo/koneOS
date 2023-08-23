@@ -282,16 +282,17 @@ export class FileSystem {
                         } else {
                             const request = store.getAllKeys();
                             request.onsuccess = function () {
-                                const result = [];
+                                const result:string[] = [];
                                 for (let i = 0; i < request.result.length; i++) {
                                     //console.log(request.result[i]);
                                     if (request.result[i] !== null || request.result[i] !== undefined) {
-                                        if (request.result[i].toString().startsWith(directory)) {
-                                            result.push(request.result[i]);
+                                        if (request.result[i].toString().startsWith(directory) && request.result[i] != directory + "/") {
+                                            result.push(request.result[i].toString());
                                         }
                                     }
                                 }
-                                resolve(result);
+                                const toResolve = { parentDir: directory + "/", children: result };
+                                resolve(toResolve);
                             };
 
                             request.onerror = function () {
@@ -417,11 +418,123 @@ export class FileSystem {
         return promise;
     }
 
-    public static async deleteDirRecursive(pathToFile: string){
-        const promise = new Promise((resolve, reject) => {
+    public static async deleteDirRecursive(pathToDir: string){
+        const promise = new Promise(async (resolve, reject) => {
             //TODO: delete directory recursively
+            await this.listDir(pathToDir).then((listDir) => {
+                this.createRootDirIfThereIsNoRootDir();
+                if (pathToDir != "/") {
+                    if (pathToDir.endsWith("/")) {
+                        pathToDir = pathToDir.substring(0, pathToDir.length - 1);
+                    }
+                }
+
+                const openRequest = indexedDB.open("koneOS_FileSystem", 1);
+                openRequest.onsuccess = function () {
+                    const db = openRequest.result;
+                    const transaction = db.transaction("koneOS_MainDrive", "readwrite");
+                    const store = transaction.objectStore("koneOS_MainDrive");
+                    for (let i = 0; i < listDir.children.length; i++){
+                        const request = store.delete(listDir.children[i]);
+                        request.onsuccess = function () {
+                            //console.log("Deleted", listDir.children[i]);
+                        };
+
+                        request.onerror = function () {
+                            console.log("Error when reading file:", request.error);
+                            reject(ERROR.UNKNOWN_ERROR);
+                        };
+                    }
+                    // delete parent dir after deleting children files/folders
+                    const request = store.delete(listDir.parentDir);
+                    request.onsuccess = function () {
+                        console.log("Deleted directory recursively!");
+                    };
+
+                    request.onerror = function () {
+                        console.log("Error when reading file:", request.error);
+                        reject(ERROR.UNKNOWN_ERROR);
+                    };
+                    db.close();
+                };
+                openRequest.onerror = function () {
+                    console.error("Error when opening indexedDB database:", openRequest.error);
+                    reject(ERROR.INDEXEDDB_ERROR);
+                };
+            });
 
         });
         return promise;
     }
+
+    public static async moveFile(pathToFile: string, newParentDirPath: string, newName: string){
+        const promise = new Promise(async (resolve, reject) => {
+            let fileContents = "";
+            await FileSystem.readFromFile(pathToFile).then((fileRead) => {
+                fileContents = fileRead;
+                this.createRootDirIfThereIsNoRootDir();
+                if (pathToFile != "/") {
+                    if (pathToFile.endsWith("/")) {
+                        pathToFile = pathToFile.substring(0, pathToFile.length - 1);
+                    }
+                }
+
+                const openRequest = indexedDB.open("koneOS_FileSystem", 1);
+                openRequest.onsuccess = function () {
+                    const db = openRequest.result;
+                    const transaction = db.transaction("koneOS_MainDrive", "readwrite");
+                    const store = transaction.objectStore("koneOS_MainDrive");
+                    console.log("Checking", pathToFile);
+                    const isFile = store.get(pathToFile);
+                    isFile.onsuccess = () => {
+                        if (isFile.result) {
+                            if (isFile.result.Directory != false) {
+                                console.error(pathToFile, "is not a file!");
+                                reject(ERROR.FILE_REQUESTED_IS_A_DIRECTORY);
+                            } else {
+                                const request = store.delete(pathToFile);
+
+                                request.onsuccess = function () {
+                                    //resolve(SUCCESS.DELETED_FILE);
+                                };
+
+                                request.onerror = function () {
+                                    console.log("Error when moving file:", request.error);
+                                    reject(ERROR.UNKNOWN_ERROR);
+                                };
+                            }
+                        } else {
+                            console.error(pathToFile, "does not exist!");
+                            reject(ERROR.FILE_DOES_NOT_EXIST);
+                        }
+                    };
+
+                    db.close();
+                };
+                openRequest.onerror = function () {
+                    console.error("Error when opening indexedDB database:", openRequest.error);
+                    reject(ERROR.INDEXEDDB_ERROR);
+                };
+            });
+            await FileSystem.createFile(newParentDirPath, newName, fileContents).then((result) => {
+               if (result == SUCCESS.CREATED_FILE){
+                   resolve(SUCCESS.MOVED_FILE);
+               }
+            });
+
+
+        });
+        return promise;
+    }
+
+    public static async moveDirRecursive(pathToDir: string, newParentDirPath: string){
+        const promise = new Promise(async (resolve, reject) => {
+            //TODO: make dir move recursively
+
+
+        });
+        return promise;
+    }
+
+
 }
