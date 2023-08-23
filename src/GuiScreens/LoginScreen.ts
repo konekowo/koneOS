@@ -11,6 +11,8 @@ export class LoginScreen {
         userPFPGraphicBG.lineStyle(0);
         userPFPGraphicBG.beginFill(new PIXI.Color("rgb(210,210,210)"), 1);
         userPFPGraphicBG.drawCircle(0, 0, 75);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userPFPGraphicBG.scale = new PIXI.ObservablePoint(null, null, 0, 0);
         app.stage.addChild(userPFPGraphicBG);
 
@@ -206,19 +208,17 @@ export class LoginScreen {
         }
 
         function movePasswordCursor() {
-            if (passwordText == "") {
-                ease.add(
-                    passwordCursor,
-                    { x: (passwordCursor.x = window.innerWidth / 2 - 250 / 2 + 10) },
-                    { reverse: false, duration: 100, ease: "easeInOutQuad" },
-                );
-            } else {
-                ease.add(
-                    passwordCursor,
-                    { x: window.innerWidth / 2 - 250 / 2 + 10 + passwordTextRender.width + 2 },
-                    { reverse: false, duration: 100, ease: "easeInOutQuad" },
-                );
-            }
+            ease.removeEase(passwordCursor);
+            ease.add(
+                passwordCursor,
+                { x: passwordText.length > 0?window.innerWidth / 2 - 250 / 2 + 10 + passwordTextRender.width + 2: window.innerWidth / 2 - 250 / 2 + 10},
+                { reverse: false, duration: 100, ease: "easeInOutQuad" },
+            );
+            setTimeout(()=> {
+                passwordCursor.alpha = 1;
+                ease.add(passwordCursor, { alpha: 0 }, { repeat: true, reverse: true, duration: 800, ease: "easeInOutQuad" });
+            }, 100)
+
         }
 
         ease.add(passwordCursor, { alpha: 0 }, { repeat: true, reverse: true, duration: 800, ease: "easeInOutQuad" });
@@ -264,6 +264,11 @@ export class LoginScreen {
                 { x: window.innerWidth / 2, y: window.innerHeight / 2 - 100 },
                 { reverse: false, duration: 400, ease: "easeInOutQuad" },
             );
+            ease.add(passwordCursor, { x: window.innerWidth / 2 - 250 / 2 + 10 + passwordTextRender.width + 2, y: window.innerHeight / 2 + 82.5 }, { duration: 400, ease: "easeInOutQuad" });
+            ease.add(passwordTextRender, { x: window.innerWidth / 2 - passwordPlaceHolder.width - 25, y: window.innerHeight / 2 + 80 }, { duration: 400, ease: "easeInOutQuad" });
+
+
+
         });
     }
 }
