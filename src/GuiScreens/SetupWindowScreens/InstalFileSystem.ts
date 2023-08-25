@@ -97,6 +97,15 @@ export class InstallFileSystem {
             // @ts-ignore
             fakeConsole.innerHTML += "<p class='fakeConsole Text'>Done!</p>";
 
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "./assets/testAppIcon.png", true);
+            xhr.responseType = "blob";
+            xhr.send();
+
+            xhr.onload = async () => {
+                await FileSystem.createFile("/koneOS/system/assets/", "testAppIcon.png", xhr.response);
+            }
+
             //await window.localStorage.setItem("isSetupDone", "true");
             screenContainer.appendChild(continueButton);
             continueButton.innerText = "Continue";

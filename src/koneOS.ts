@@ -6,8 +6,10 @@ import { LockScreen } from "./GuiScreens/LockScreen";
 
 export class koneOS {
     public devMode = false;
+    public static pixiApp:PIXI.Application;
     constructor(app: PIXI.Application) {
         console.log("%cStarting koneOS!", "color:rgb(0,255,0);");
+        koneOS.pixiApp = app;
         const loadScreen = new LoadScreen(app);
         // load stuff
 

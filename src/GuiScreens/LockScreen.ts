@@ -28,7 +28,11 @@ export class LockScreen {
                 scaleFactor0 = window.innerHeight / ogHeight - 0.5;
             }
             //console.log(scaleFactor0);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             bgSprite.scale = new PIXI.ObservablePoint(null, null, scaleFactor0, scaleFactor0);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             bgSprite.anchor = new PIXI.ObservablePoint(null, null, 0.5, 0.5);
             bgSprite.x = window.innerWidth / 2;
             bgSprite.y = window.innerHeight / 2;
@@ -97,7 +101,7 @@ export class LockScreen {
             time.x = window.innerWidth / 2 - time.width / 2;
             time.y = 150;
             time.alpha = 0;
-            setInterval(() => {
+            const clockInterval = setInterval(() => {
                 calendar = new Date();
                 let hours = calendar.getHours();
                 let isAM = true;
@@ -161,7 +165,8 @@ export class LockScreen {
             date.alpha = 0;
             app.stage.addChild(time, date);
 
-            window.addEventListener("resize", () => {
+            window.addEventListener("resize", handleResize);
+            function handleResize() {
                 ease.add(
                     time,
                     { x: window.innerWidth / 2 - time.width / 2, y: 150 },
@@ -172,7 +177,7 @@ export class LockScreen {
                     { x: window.innerWidth / 2 - date.width / 2, y: 150 + date.height + 30 },
                     { reverse: false, duration: 400, ease: "easeInOutQuad" },
                 );
-            });
+            }
             const bgBlur = new PIXI.BlurFilter(0, 8);
             bgSprite.filters = [bgBlur];
             const blur = { blurAmmount: 0 };
@@ -182,7 +187,7 @@ export class LockScreen {
             function handleClickBlur() {
                 clearTimeout(dateTimeFadeIn);
                 const blurAnim = new TWEEN.Tween(blur)
-                    .to({ blurAmmount: 50 }, 800)
+                    .to({ blurAmmount: 25 }, 800)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(() => {
                         bgBlur.blur = blur.blurAmmount;
@@ -205,6 +210,10 @@ export class LockScreen {
 
                 setTimeout(() => {
                     new LoginScreen(app, bgSprite);
+                    time.removeFromParent();
+                    date.removeFromParent();
+                    clearInterval(clockInterval);
+                    window.removeEventListener("resize", handleResize);
                 }, 400);
             }
             window.addEventListener("click", handleClickBlur);
