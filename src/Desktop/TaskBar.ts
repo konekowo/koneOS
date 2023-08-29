@@ -10,10 +10,9 @@ export class TaskBar {
     
     public constructor(app:PIXI.Application) {
         this.taskBarBg = new PIXI.Graphics();
-        this.taskBarBg.beginFill(new PIXI.Color("rgba(166,165,165,0.97)"))
+        this.taskBarBg.beginFill(new PIXI.Color("rgba(37,37,37,0.97)"));
+        this.taskBarBg.lineStyle(1, new PIXI.Color("rgba(159,159,159,0.97)"));
         this.taskBarBg.drawRoundedRect(-2,-2, (AppManager.apps.length*65)+15, 88, 12);
-        this.taskBarBg.beginFill(new PIXI.Color("rgba(37,37,37,0.97)"))
-        this.taskBarBg.drawRoundedRect(0,0,(AppManager.apps.length*65)+10, 85, 12);
         this.taskBarBg.x = 0;
         this.taskBarBg.y = 0;
         this.taskBarContainer = new PIXI.Container();

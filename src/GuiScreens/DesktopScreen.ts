@@ -7,7 +7,7 @@ export class DesktopScreen{
     public constructor(bgImgWidth:number, bgImgHeight:number, bgSprite: PIXI.Sprite, app:PIXI.Application) {
         console.log("Cleaned Screens and loops! (which probably, hopefully cleaned out some of the memory)")
         app.stage.addChild(bgSprite);
-        const testApp = new TestApp();
+        const testApp = new TestApp(app);
         const taskBar = new TaskBar(app);
         const menuBar = new MenuBar(app);
     }

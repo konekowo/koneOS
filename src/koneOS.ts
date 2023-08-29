@@ -21,6 +21,6 @@ export class koneOS {
             } else {
                 new SetupScreen(app);
             }
-        }, 0);
+        }, 1);
     }
 }

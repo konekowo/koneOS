@@ -1,11 +1,13 @@
 import {AppManager} from "./AppManager";
-
+import * as PIXI from "pixi.js";
 export class App {
 
     protected appIconPath = "";
     protected appName = "";
+    protected app;
 
-    public constructor() {
+    public constructor(app:PIXI.Application) {
+        this.app = app;
         AppManager.apps.push(this);
     }
 

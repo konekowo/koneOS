@@ -106,6 +106,15 @@ export class InstallFileSystem {
                 await FileSystem.createFile("/koneOS/system/assets/", "testAppIcon.png", xhr.response);
             }
 
+            const xhr2 = new XMLHttpRequest();
+            xhr2.open("GET", "./assets/default_background.jpg", true);
+            xhr2.responseType = "blob";
+            xhr2.send();
+
+            xhr2.onload = async () => {
+                await FileSystem.createFile("/koneOS/system/assets/", "default_wallpaper.jpg", xhr2.response);
+            }
+
             //await window.localStorage.setItem("isSetupDone", "true");
             screenContainer.appendChild(continueButton);
             continueButton.innerText = "Continue";
