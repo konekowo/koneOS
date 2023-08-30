@@ -33,7 +33,7 @@
         "html2canvas": "^1.4.1",
         "pixi-ease": "^3.0.7",
         "pixi.js": "^7.2.4",
-        "regenerator-runtime": "^0.13.10",
+        "regenerator-runtime": "^0.14.0",
         "showdown": "^2.1.0"
     },
     "devDependencies": {
