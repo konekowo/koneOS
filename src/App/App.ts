@@ -17,15 +17,6 @@ export class App {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     public onClose() {}
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/ban-ts-comment
-    public onkeyup(event: any) {}
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    public onkeydown(event: any) {}
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    public onkeypress(event: any) {}
-
     public getAppIconPath() {
         return this.appIconPath;
     }

@@ -30,6 +30,7 @@
         "@types/showdown": "^2.0.1",
         "core-js": "^3.26.0",
         "crypto-js": "^4.1.1",
+        "html2canvas": "^1.4.1",
         "pixi-ease": "^3.0.7",
         "pixi.js": "^7.2.4",
         "regenerator-runtime": "^0.13.10",

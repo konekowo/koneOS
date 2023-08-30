@@ -11,6 +11,6 @@ export class TestApp extends App {
 
     public onStart() {
         console.log("Test App Started");
-        const testWindow = new Window(this.app, window.innerWidth/2, window.innerHeight/2, 600, 500, "Test App", this.appIconPath, {closeButton:true, maximizeButton:true, minimizeButton:true});
+        const testWindow = new Window(this.app, window.innerWidth/2, window.innerHeight/2, 1000, 600, "Test App", this.appIconPath, {closeButton:true, maximizeButton:true, minimizeButton:true});
     }
 }

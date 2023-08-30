@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import {ease} from "pixi-ease";
 import {FileSystem} from "../FileSystem";
+import html2canvas from "html2canvas";
 
 
 
@@ -37,10 +38,13 @@ export class Window{
     private maximiseButton;
     private windowContainer;
     private windowMask;
+    protected isWindowActive;
+    public contentDiv;
 
     private static Windows:Array<Window> = new Array<Window>();
 
     public constructor(app:PIXI.Application, x:number, y:number, width:number, height:number, windowTitle:string, iconPath:string, windowOptions:WindowOptions) {
+
         this.graphics = new PIXI.Graphics();
         this.windowContainer = new PIXI.Container();
         this.x = x;
@@ -87,9 +91,7 @@ export class Window{
         }
         this.windowContainer.eventMode = "static";
         this.windowContainer.onmousedown = () => {
-            // bring window to front
-            this.windowContainer.removeFromParent();
-            app.stage.addChild(this.windowContainer);
+            this.bringWindowToFront(app);
         }
 
 
@@ -133,10 +135,48 @@ export class Window{
         this.windowContainer.addChild(this.maximiseButton);
 
         app.stage.addChild(this.windowContainer);
-        this.drawWindow();
 
+        this.isWindowActive = true;
         this.windowContainer.x = this.x;
         this.windowContainer.y = this.y;
+
+        this.contentDiv = document.createElement("div");
+        this.contentDiv.style.position = "absolute";
+        //this.contentDiv.style.backgroundColor = "white";
+        this.contentDiv.style.borderRadius = "0px 0px 8px 8px";
+        this.contentDiv.style.transform = "scale(0.7)";
+        this.contentDiv.style.opacity = "0%";
+        this.contentDiv.style.transition = "transform 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s";
+        this.contentDiv.style.overflow = "hidden";
+        this.drawWindow();
+        setTimeout(()=>{
+            this.contentDiv.style.transform = "scale(1)";
+            this.contentDiv.style.opacity = "100%";
+        },1);
+        document.body.appendChild(this.contentDiv);
+        this.contentDiv.innerHTML = "" +
+            "<iframe width='100%' height='100%' src='https://www.youtube.com/embed/8fP7LPrysFI?si=bunzewN2uxSGgtx3' title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen style='position: absolute; top: 0%; left: 0%; border: none;'></iframe>"
+        Window.Windows.push(this);
+    }
+
+    public bringWindowToFront(app:PIXI.Application){
+        this.windowContainer.removeFromParent();
+        app.stage.addChild(this.windowContainer);
+        for (let i = 0; i < Window.Windows.length; i++){
+            if (Window.Windows[i] !== this){
+                Window.Windows[i].setWindowToNotActive();
+            }
+            else {
+                Window.Windows[i].isWindowActive = true;
+                this.contentDiv.style.display = "block";
+            }
+        }
+    }
+
+    public setWindowToNotActive(){
+        this.isWindowActive = false;
+        this.contentDiv.style.display = "none";
+
 
 
     }
@@ -157,9 +197,15 @@ export class Window{
         this.maximiseButton.drawCircle(this.width/2 -35, -this.height/2 + 15, 7);
         this.minimiseButton.beginFill(new PIXI.Color("rgb(225,223,125)"));
         this.minimiseButton.drawCircle(this.width/2 -55, -this.height/2 + 15, 7);
-
+        this.setContentDivPositionAndSize();
     }
 
+    private setContentDivPositionAndSize(){
+        this.contentDiv.style.top = (this.y - (this.height/2)) + 31 + "px";
+        this.contentDiv.style.left = (this.x - (this.width/2)) + "px";
+        this.contentDiv.style.width = this.width -1 + "px";
+        this.contentDiv.style.height = this.height - 32 + "px";
+    }
     public setWidthAndHeight(width:number, height:number){
         this.graphics.clear();
         this.windowTop.clear();
@@ -184,6 +230,7 @@ export class Window{
         }
         this.windowContainer.x = this.x;
         this.windowContainer.y = this.y;
+        this.setContentDivPositionAndSize();
     }
 
     public getPosition(){
@@ -216,6 +263,8 @@ export class Window{
 
     public close(){
         ease.add(this.windowContainer, {alpha:0, scale: 0.7}, {duration: 200, ease:"easeInOutQuad"});
+        this.contentDiv.style.transform = "scale(0.7)";
+        this.contentDiv.style.opacity = "0%";
         setTimeout(()=> {
             this.destroy();
         },200);
@@ -251,6 +300,11 @@ export class Window{
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.graphics = null;
+        this.contentDiv.remove();
+    }
+
+    public getIsWindowActive(){
+        return this.isWindowActive;
     }
 
 
