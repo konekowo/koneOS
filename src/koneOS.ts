@@ -5,7 +5,7 @@ import { FileSystem } from "./FileSystem";
 import { LockScreen } from "./GuiScreens/LockScreen";
 
 export class koneOS {
-    public devMode = false;
+    public static devMode = true;
     public static pixiApp:PIXI.Application;
     constructor(app: PIXI.Application) {
         console.log("%cStarting koneOS!", "color:rgb(0,255,0);");

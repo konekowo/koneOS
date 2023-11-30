@@ -1,4 +1,4 @@
-import { InstallFileSystem } from "./InstalFileSystem";
+import { InstallFileSystem } from "./InstallFileSystem";
 import * as Showdown from "showdown";
 
 export class EULA {

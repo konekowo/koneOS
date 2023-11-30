@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: rgb(20, 23, 26);
+            width: 100vw;
+            height: 100vh;
+            margin: 0px;
+        }
+
+        .pane {
+            box-sizing: border-box;
+            border-collapse: collapse;
+            border: 1px solid white;
+            color: white;
+            font-family: Arial;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .pane.top {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 7vh;
+        }
+
+        .pane.side {
+            position: absolute;
+            top: 7vh;
+            left: 0px;
+            width: 15vw;
+            height: 93vh;
+        }
+
+        .pane.main {
+            position: absolute;
+            top: 7vh;
+            left: 15vw;
+            width: 85vw;
+            height: 93vh;
+        }
+        .nav.button {
+            min-width: 30px;
+            min-height: 30px;
+            border: 1px solid white;
+            border-radius: 3px;
+            background-color: rgb(47, 47, 47);
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .nav.button:hover {
+            background-color: rgb(59, 59, 59);
+        }
+        .nav.button:active {
+            background-color: rgb(21, 21, 21);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="pane top">
+        <button class="nav button back">&lt;</button>
+    </div>
+    <div class="pane side">
+
+    </div>
+    <div class="pane main">
+
+    </div>
+
+
+</body>
+
+</html>

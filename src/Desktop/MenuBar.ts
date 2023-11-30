@@ -1,18 +1,31 @@
 import * as PIXI from "pixi.js";
 import {ease} from "pixi-ease";
+import {BatteryIndicatorMenuBar} from "./BatteryIndicatorMenuBar";
 
 export class MenuBar {
     private menuBarBg:PIXI.Graphics;
+    private menuContainer:PIXI.Container;
+    private batteryIndicator:PIXI.Graphics;
+
     public constructor(app:PIXI.Application) {
+        this.menuContainer = new PIXI.Container();
+
         this.menuBarBg = new PIXI.Graphics();
         this.menuBarBg.beginFill(new PIXI.Color("rgba(37,37,37,0.97)"))
         this.menuBarBg.drawRoundedRect(0,0,1, 35, 12);
-        app.stage.addChild(this.menuBarBg);
+        this.menuContainer.addChild(this.menuBarBg);
+        app.stage.addChild(this.menuContainer);
         this.menuBarBg.width = window.innerWidth;
-        this.menuBarBg.x = 0;
-        this.menuBarBg.y = -35;
+        this.menuContainer.x = 0;
+        this.menuContainer.y = -35;
 
-        ease.add(this.menuBarBg, {y:-1}, {duration: 400, ease: "easeInOutQuad"});
+        this.batteryIndicator = new BatteryIndicatorMenuBar().getGraphic();
+        this.batteryIndicator.x = window.innerWidth - 37;
+        this.batteryIndicator.y = (this.menuBarBg.height/2) - (this.batteryIndicator.height/2)
+        this.menuContainer.addChild(this.batteryIndicator);
+
+
+        ease.add(this.menuContainer, {y:-1}, {duration: 400, ease: "easeInOutQuad"});
         const onResize = () => {
             ease.add(this.menuBarBg, {
                 x:0,

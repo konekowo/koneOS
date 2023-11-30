@@ -4,15 +4,17 @@ export class App {
 
     protected appIconPath = "";
     protected appName = "";
-    protected app;
+    public PID: number | undefined;
 
-    public constructor(app:PIXI.Application) {
-        this.app = app;
-        AppManager.apps.push(this);
+    public constructor() {
+        AppManager.registerApp(this);
+
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    public onStart(){}
+    public onStart(){
+        this.PID = AppManager.getPID();
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     public onClose() {}

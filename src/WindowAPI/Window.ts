@@ -1,7 +1,6 @@
 import * as PIXI from "pixi.js";
 import {ease} from "pixi-ease";
 import {FileSystem} from "../FileSystem";
-import html2canvas from "html2canvas";
 
 
 
@@ -81,12 +80,23 @@ export class Window{
         app.stage.eventMode = "static";
 
         this.windowTop.onmousedown = () => {
-            app.stage.onmousemove = (e) => {
+            window.onmousemove = (e) => {
                 this.setPosition((e.clientX + (this.width/2)) - this.width/2, (e.clientY + (this.height/2)) - 15);
             }
-            app.stage.onmouseup = () => {
-                app.stage.onmousemove = null;
-                app.stage.onmouseup = null;
+            this.contentDiv.onmousemove = (e) => {
+                this.setPosition((e.clientX + (this.width/2)) - this.width/2, (e.clientY + (this.height/2)) - 15);
+            }
+            this.contentDiv.onmouseup = () => {
+                window.onmousemove = null;
+                window.onmouseup = null;
+                this.contentDiv.onmousemove = null;
+                this.contentDiv.onmouseup = null;
+            }
+            window.onmouseup = () => {
+                window.onmousemove = null;
+                window.onmouseup = null;
+                this.contentDiv.onmousemove = null;
+                this.contentDiv.onmouseup = null;
             }
         }
         this.windowContainer.eventMode = "static";
@@ -154,8 +164,6 @@ export class Window{
             this.contentDiv.style.opacity = "100%";
         },1);
         document.body.appendChild(this.contentDiv);
-        this.contentDiv.innerHTML = "" +
-            "<iframe width='100%' height='100%' src='https://www.youtube.com/embed/8fP7LPrysFI?si=bunzewN2uxSGgtx3' title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen style='position: absolute; top: 0%; left: 0%; border: none;'></iframe>"
         Window.Windows.push(this);
     }
 
